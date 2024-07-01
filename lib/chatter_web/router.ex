@@ -24,14 +24,32 @@ defmodule ChatterWeb.Router do
   scope "/", ChatterWeb do
     pipe_through :browser
 
+    ash_authentication_live_session :authentication_required,
+      on_mount: {ChatterWeb.LiveUserAuth, :live_user_required} do
+      live "/", RoomsLive.Index, :index
+      live "/room/:id", RoomsLive.Show, :show
+    end
+
+    sign_out_route AuthController
+  end
+
+  scope "/", ChatterWeb do
+    pipe_through :browser
+
     get "/", PageController, :home
     # Leave out `register_path` and `reset_path` if you don't want to support
     # user registration and/or password resets respectively.
-    sign_in_route(register_path: "/register") #reset_path: "/reset"
-    sign_out_route AuthController
+    # reset_path: "/reset"
+
+    # hide sign-in for logged-in users
+    sign_in_route(
+      register_path: "/register",
+      on_mount: [{ChatterWeb.LiveUserAuth, :live_no_user}]
+    )
+
     auth_routes_for Chatter.Accounts.User, to: AuthController
     reset_route []
-      end
+  end
 
   # Other scopes may use custom stacks.
   # scope "/api", ChatterWeb do

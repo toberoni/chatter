@@ -673,4 +673,28 @@ defmodule ChatterWeb.CoreComponents do
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
   end
+
+  slot :sidebar, required: true
+  slot :main, required: true
+
+  def chat_grid(assigns) do
+    ~H"""
+    <div class="grid grid-cols-6 gap-12">
+      <div class="col-span-2">
+        <%= render_slot(@sidebar) %>
+      </div>
+      <div class="col-span-4">
+        <%= render_slot(@main) %>
+      </div>
+    </div>
+    """
+  end
+
+  def chat_window(assigns) do
+    ~H"""
+    <div class="overflow-y-scroll flex flex-col grow-0 gap-4 border border-gray-200 rounded-lg px-4 py-10 w-full">
+      <%= render_slot(@inner_block) %>
+    </div>
+    """
+  end
 end

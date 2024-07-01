@@ -45,6 +45,10 @@ defmodule Chatter.Accounts.User do
     identity :unique_email, [:email]
   end
 
+  relationships do
+    has_many :rooms, Chatter.Chat.Room, destination_attribute: :owner_id
+  end
+
   # If using policies, add the following bypass:
   # policies do
   #   bypass AshAuthentication.Checks.AshAuthenticationInteraction do

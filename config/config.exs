@@ -8,7 +8,7 @@
 import Config
 
 config :chatter,
-  ash_domains: [Chatter.Accounts]
+  ash_domains: [Chatter.Accounts, Chatter.Chat]
 
 config :chatter,
   ecto_repos: [Chatter.Repo],

@@ -7,7 +7,7 @@ defmodule ChatterWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_chatter_key",
-    signing_salt: "7/PZ00DS",
+    signing_salt: "Kl9TUyjL",
     same_site: "Lax"
   ]
 

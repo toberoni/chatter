@@ -1,5 +1,14 @@
 # Chatter
 
+## Users
+
+
+```bash
+mix ash_sqlite.create
+ mix ash_sqlite.generate_migrations --name add_user_and_token
+ mix ash_sqlite.migrate
+```
+
 To start your Phoenix server:
 
   * Run `mix setup` to install and setup dependencies

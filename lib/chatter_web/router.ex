@@ -1,5 +1,6 @@
 defmodule ChatterWeb.Router do
   use ChatterWeb, :router
+  use AshAuthentication.Phoenix.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -8,17 +9,29 @@ defmodule ChatterWeb.Router do
     plug :put_root_layout, html: {ChatterWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+
+    # ash
+    plug :load_from_session
   end
 
   pipeline :api do
     plug :accepts, ["json"]
+
+    # ash
+    plug :load_from_bearer
   end
 
   scope "/", ChatterWeb do
     pipe_through :browser
 
     get "/", PageController, :home
-  end
+    # Leave out `register_path` and `reset_path` if you don't want to support
+    # user registration and/or password resets respectively.
+    sign_in_route(register_path: "/register") #reset_path: "/reset"
+    sign_out_route AuthController
+    auth_routes_for Chatter.Accounts.User, to: AuthController
+    reset_route []
+      end
 
   # Other scopes may use custom stacks.
   # scope "/api", ChatterWeb do

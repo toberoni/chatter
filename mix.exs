@@ -58,7 +58,14 @@ defmodule Chatter.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
-      {:bandit, "~> 1.5"}
+      {:bandit, "~> 1.5"},
+      # ash
+      {:ash, "~> 3.0.16"},
+      {:ash_sqlite, "~> 0.1.3"},
+      {:ash_phoenix, "~> 2.0.4"},
+      {:picosat_elixir, "~> 0.2.3"},
+      {:ash_authentication, "~> 4.0.1"},
+      {:ash_authentication_phoenix, "~> 2.0.0"},
     ]
   end
 

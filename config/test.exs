@@ -14,7 +14,7 @@ config :chatter, Chatter.Repo,
 # you can enable the server option below.
 config :chatter, ChatterWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
-  secret_key_base: "hb08jj+Hhl09NHbocyiEhXR+zkJVGgLikMUXZptHhsHKSOOAW6BTs+KMqZptxtUp",
+  secret_key_base: "kcS/96H65uFrLAhSiSzxCTiQjS6uPuRkM1tyYdY994kAFP7kUOSn3ObD6tetZoGq",
   server: false
 
 # In test we don't send emails

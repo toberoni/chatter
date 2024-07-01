@@ -21,7 +21,7 @@ defmodule ChatterWeb do
 
   def router do
     quote do
-      use Phoenix.Router, helpers: false
+      use Phoenix.Router, helpers: true # ash
 
       # Import common connection and controller functions to use in pipelines
       import Plug.Conn

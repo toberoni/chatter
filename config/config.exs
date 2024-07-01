@@ -8,6 +8,9 @@
 import Config
 
 config :chatter,
+  ash_domains: [Chatter.Accounts]
+
+config :chatter,
   ecto_repos: [Chatter.Repo],
   generators: [timestamp_type: :utc_datetime]
 
@@ -20,7 +23,7 @@ config :chatter, ChatterWeb.Endpoint,
     layout: false
   ],
   pubsub_server: Chatter.PubSub,
-  live_view: [signing_salt: "JtC5Hv9E"]
+  live_view: [signing_salt: "GVbujRJx"]
 
 # Configures the mailer
 #

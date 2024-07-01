@@ -15,6 +15,7 @@ defmodule Chatter.Application do
         skip: skip_migrations?()},
       {DNSCluster, query: Application.get_env(:chatter, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Chatter.PubSub},
+      {AshAuthentication.Supervisor, otp_app: :chatter},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Chatter.Finch},
       # Start a worker by calling: Chatter.Worker.start_link(arg)

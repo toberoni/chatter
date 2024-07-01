@@ -20,7 +20,7 @@ config :chatter, ChatterWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "RaPwZ+mTFMyj9oGnIXkOgfwhKsd4ixmBnNqSWyBQGlazYDgRR7Cb8i4MTLx+DfEY",
+  secret_key_base: "QIB63XoOL9V9sqfUIwnJOwICGVmUAdZCdwfJQhiKPPB1DP6K7G8FDaLaTsF92xlL",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:chatter, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:chatter, ~w(--watch)]}

@@ -3,10 +3,17 @@ defmodule Chatter.Chat.Room do
     data_layer: AshSqlite.DataLayer,
     domain: Chatter.Chat
 
+  alias Chatter.Chat.{Message, RoomUser}
+  alias Chatter.Accounts.User
+
   @owner_room_limit 2
 
   actions do
     defaults [:read, :destroy]
+
+    read :public_rooms do
+      filter expr(private: false)
+    end
 
     create :open do
       accept [:name]
@@ -15,7 +22,7 @@ defmodule Chatter.Chat.Room do
       change relate_actor(:owner)
 
       validate fn changeset, %{actor: owner} ->
-        owned_rooms = Ash.load!(owner, :rooms) |> Map.get(:rooms) |> Enum.count()
+        owned_rooms = Ash.load!(owner, :owned_rooms) |> Map.get(:owned_rooms) |> Enum.count()
 
         if owned_rooms >= owner_room_limit() do
           {:error, field: :name, message: "you can only open #{owner_room_limit()} rooms"}
@@ -23,6 +30,16 @@ defmodule Chatter.Chat.Room do
           :ok
         end
       end
+    end
+
+    update :join do
+      argument :user, :map, allow_nil?: false
+      change manage_relationship(:user, :users, type: :create)
+    end
+
+    update :leave do
+      argument :user, :map, allow_nil?: false
+      change manage_relationship(:user, :users, type: :remove)
     end
   end
 
@@ -33,13 +50,21 @@ defmodule Chatter.Chat.Room do
       allow_nil? false
     end
 
+    attribute :private, :boolean, default: false
+
     create_timestamp :created_at
     update_timestamp :updated_at
   end
 
   relationships do
-    has_many :messages, Chatter.Chat.Message
-    belongs_to :owner, Chatter.Accounts.User, allow_nil?: false
+    many_to_many :users, User do
+      through RoomUser
+      source_attribute_on_join_resource :room_id
+      destination_attribute_on_join_resource :user_id
+    end
+
+    has_many :messages, Message
+    belongs_to :owner, User, allow_nil?: false
   end
 
   sqlite do

@@ -6,16 +6,13 @@ defmodule ChatterWeb.RoomsLive.Sidebar do
   @impl true
   def render(assigns) do
     ~H"""
-    <div class="top-10 sticky flex flex-col my-8 gap-4">
-      <h2 class="text-lg">Your rooms</h2>
-      <.link
-        :for={room <- @rooms}
-        navigate={"/room/#{room.id}"}
-        class="bg-slate-200 border border-slate-300 hover:bg-blue-100 hover:-translate-y-1 p-2 rounded-lg"
-      >
-        <%= room.name %>
-      </.link>
-      <div :if={@can_open} class="mt-8 flex border-t-2 border-slate-100">
+    <aside class="top-10 sticky flex flex-col my-8 gap-4">
+      <h2 :if={Enum.any?(@owned_rooms)} class="text-lg">Your rooms</h2>
+      <.room_link :for={room <- @owned_rooms} room={room} />
+
+      <h2 :if={Enum.any?(@joined_rooms)} class="text-lg">Joined rooms</h2>
+      <.room_link :for={room <- @joined_rooms} room={room} />
+      <div :if={@can_open?} class="mt-8 flex border-t-2 border-slate-100">
         <.simple_form for={@form} phx-submit="open_room" phx-target={@myself}>
           <.input field={@form[:name]} label="Name" />
           <:actions>
@@ -23,7 +20,7 @@ defmodule ChatterWeb.RoomsLive.Sidebar do
           </:actions>
         </.simple_form>
       </div>
-    </div>
+    </aside>
     """
   end
 
@@ -33,12 +30,17 @@ defmodule ChatterWeb.RoomsLive.Sidebar do
       AshPhoenix.Form.for_create(Room, :open, as: "room", actor: assigns.current_user)
       |> to_form
 
-    rooms = Ash.load!(assigns.current_user, :rooms) |> Map.get(:rooms)
-
+    user = Ash.load!(assigns.current_user, [:owned_rooms, :joined_rooms])
     # only show
-    can_open = Enum.count(rooms) < Room.owner_room_limit()
 
-    {:ok, socket |> assign(form: form, rooms: rooms, can_open: can_open)}
+    {:ok,
+     socket
+     |> assign(
+       form: form,
+       owned_rooms: user.owned_rooms,
+       joined_rooms: user.joined_rooms,
+       can_open?: can_open?(user)
+     )}
   end
 
   @impl true
@@ -57,5 +59,9 @@ defmodule ChatterWeb.RoomsLive.Sidebar do
          socket
          |> assign(form: form)}
     end
+  end
+
+  defp can_open?(user) do
+    Enum.count(user.owned_rooms) < Room.owner_room_limit()
   end
 end

@@ -4,8 +4,11 @@ defmodule Chatter.Accounts.User do
     data_layer: AshSqlite.DataLayer,
     extensions: [AshAuthentication]
 
+  alias Chatter.Chat.Room
+  alias Chatter.Chat.RoomUser
+
   actions do
-    defaults [:read]
+    defaults [:read, :create]
   end
 
   attributes do
@@ -46,7 +49,13 @@ defmodule Chatter.Accounts.User do
   end
 
   relationships do
-    has_many :rooms, Chatter.Chat.Room, destination_attribute: :owner_id
+    has_many :owned_rooms, Room, destination_attribute: :owner_id
+
+    many_to_many :joined_rooms, Room do
+      through RoomUser
+      source_attribute_on_join_resource :user_id
+      destination_attribute_on_join_resource :room_id
+    end
   end
 
   # If using policies, add the following bypass:

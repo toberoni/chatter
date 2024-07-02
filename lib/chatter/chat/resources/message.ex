@@ -26,7 +26,7 @@ defmodule Chatter.Chat.Message do
   end
 
   relationships do
-    belongs_to :room, Chatter.Chat.Room, attribute_type: :integer
+    belongs_to :room, Chatter.Chat.Room, allow_nil?: false, attribute_type: :integer
     belongs_to :author, Chatter.Accounts.User, allow_nil?: false
   end
 

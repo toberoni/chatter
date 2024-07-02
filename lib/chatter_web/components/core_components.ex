@@ -679,7 +679,7 @@ defmodule ChatterWeb.CoreComponents do
 
   def chat_grid(assigns) do
     ~H"""
-    <div class="grid grid-cols-6 gap-12">
+    <div class="grid grid-cols-6 gap-20">
       <div class="col-span-2">
         <%= render_slot(@sidebar) %>
       </div>
@@ -695,6 +695,19 @@ defmodule ChatterWeb.CoreComponents do
     <div class="overflow-y-scroll flex flex-col grow-0 gap-4 border border-gray-200 rounded-lg px-4 py-10 w-full">
       <%= render_slot(@inner_block) %>
     </div>
+    """
+  end
+
+  attr :room, :map, required: true
+
+  def room_link(assigns) do
+    ~H"""
+    <.link
+      navigate={"/room/#{@room.id}"}
+      class="bg-slate-200 border border-slate-300 hover:bg-blue-100 hover:-translate-y-1 p-2 rounded-lg"
+    >
+      <%= @room.name %>
+    </.link>
     """
   end
 end

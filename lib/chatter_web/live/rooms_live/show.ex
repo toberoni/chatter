@@ -55,6 +55,20 @@ defmodule ChatterWeb.RoomsLive.Show do
           </div>
         </div>
         <.button :if={@room_member?} phx-click="leave_room" class="my-8">Leave Room</.button>
+        <.button
+          :if={@room.private == false and @current_user.id == @room.owner_id}
+          phx-click="make_private"
+          class="my-8"
+        >
+          Make private
+        </.button>
+        <.button
+          :if={@room.private and @current_user.id == @room.owner_id}
+          phx-click="make_public"
+          class="my-8"
+        >
+          Make public
+        </.button>
         <div :if={Enum.any?(@users)} class="my-4 flex gap-4">
           <span>Users: </span>
           <div :for={user <- @users}><%= user.email %></div>
@@ -75,7 +89,9 @@ defmodule ChatterWeb.RoomsLive.Show do
   @spec handle_params(map(), any(), any()) :: {:noreply, any()}
   def handle_params(%{"id" => room_id}, _uri, socket) do
     # replace with Chat.room_with_messages?
-    room = Ash.get!(Room, String.to_integer(room_id)) |> Ash.load!([:users, messages: [:author]])
+    room =
+      Ash.get!(Room, String.to_integer(room_id), actor: socket.assigns.current_user)
+      |> Ash.load!([:users, messages: [:author]])
 
     messages = room.messages
     users = room.users
@@ -118,8 +134,9 @@ defmodule ChatterWeb.RoomsLive.Show do
   @impl true
   def handle_event("join_room", _params, socket) do
     room = socket.assigns.room
+    user = socket.assigns.current_user
 
-    Chat.join_room(room, socket.assigns.current_user)
+    Chat.join_room(room, user, actor: user)
 
     {:noreply,
      socket
@@ -129,12 +146,35 @@ defmodule ChatterWeb.RoomsLive.Show do
 
   @impl true
   def handle_event("leave_room", _params, socket) do
-    Chat.leave_room(socket.assigns.room, socket.assigns.current_user)
+    user = socket.assigns.current_user
+    Chat.leave_room(socket.assigns.room, user, actor: user)
 
     {:noreply,
      socket
      |> put_flash(:info, "Left room '#{socket.assigns.room.name}'")
      |> push_navigate(to: "/")}
+  end
+
+  @impl true
+  def handle_event("make_private", _params, socket) do
+    room = socket.assigns.room
+    Chat.make_room_private(room, actor: socket.assigns.current_user)
+
+    {:noreply,
+     socket
+     |> put_flash(:info, "Room '#{room.name}' is now private.")
+     |> push_navigate(to: "/room/#{room.id}")}
+  end
+
+  @impl true
+  def handle_event("make_public", _params, socket) do
+    room = socket.assigns.room
+    Chat.make_room_public(room, actor: socket.assigns.current_user)
+
+    {:noreply,
+     socket
+     |> put_flash(:info, "Room '#{room.name}' is now public.")
+     |> push_navigate(to: "/room/#{room.id}")}
   end
 
   defp assign_message_form(socket) do

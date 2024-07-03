@@ -24,7 +24,10 @@ defmodule ChatterWeb.RoomsLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    rooms = Ash.Query.for_read(Room, :public_rooms) |> Ash.read!()
+    rooms =
+      Ash.Query.for_read(Room, :public_rooms, %{}, actor: socket.assigns.current_user)
+      |> Ash.read!()
+
     {:ok, assign(socket, rooms: rooms)}
   end
 end

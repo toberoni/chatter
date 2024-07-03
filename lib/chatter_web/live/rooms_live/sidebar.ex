@@ -30,8 +30,8 @@ defmodule ChatterWeb.RoomsLive.Sidebar do
       AshPhoenix.Form.for_create(Room, :open, as: "room", actor: assigns.current_user)
       |> to_form
 
-    user = Ash.load!(assigns.current_user, [:owned_rooms, :joined_rooms])
-    # only show
+    user =
+      Ash.load!(assigns.current_user, [:owned_rooms, :joined_rooms], actor: assigns.current_user)
 
     {:ok,
      socket
